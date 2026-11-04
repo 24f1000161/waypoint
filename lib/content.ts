@@ -7,11 +7,12 @@ export const guidanceAreas = [
   { name: 'Employment and job search', description: 'Get perspective on roles, applications, and starting well in your first job.' },
 ]
 export const steps = [
-  ['01', 'Build your profile', 'Share the context that helps the platform suggest relevant mentors.'],
-  ['02', 'Share your goal', "Tell us what you're working toward and what's holding you back."],
-  ['03', 'IIC team review', 'The IIC team reviews suggested mentors and approves the match.'],
-  ['04', 'Accept and connect', 'Your mentor accepts or declines. You receive their preferred contact method.'],
-  ['05', 'Meet your way', 'Talk on your own channel, log that it happened, and give structured feedback.'],
+  ['01', 'Build your profile', 'Share your academic background and career interests so the platform has useful context.'],
+  ['02', 'Describe what you need', "Tell us your goal, current concern, and the guidance area you want to explore."],
+  ['03', 'See suggested mentors', 'Suggestions use expertise, availability, and capacity; they are not assignments.'],
+  ['04', 'IIC team decides', 'The IIC team reviews every match and can approve, revise, decline, or choose manually with a recorded justification.'],
+  ['05', 'Mentor accepts', 'The mentor accepts or declines, and contact details unlock only after an approved match is accepted.'],
+  ['06', 'Talk on your terms', 'Meet on email, WhatsApp, Google Meet, or another channel, then record only that an interaction occurred and share structured feedback.'],
 ] as const
 export const faqs = [
   ['Who is it for?', 'Waypoint is for eligible IITM BS students approaching programme completion who want career, higher-studies, or employment guidance from alumni and recent graduates.'],
