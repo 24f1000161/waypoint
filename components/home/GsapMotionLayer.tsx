@@ -36,7 +36,7 @@ export function GsapMotionLayer({ children }: Props) {
         const introPath = intro.querySelectorAll('.path-line, .path-node, .checkpoint')
         if (introReveals.length) tl.from(introReveals, { y: 24, opacity: 0, duration: 0.65, stagger: 0.1 }, 0.55)
         if (introPath.length) tl.from(introPath, { opacity: 0, scale: 0.7, strokeDashoffset: 500, duration: 1.1, stagger: 0.1 }, 0.35)
-        ScrollTrigger.create({ trigger: intro, start: 'top top', end: 'bottom top', scrub: 0.6, animation: gsap.timeline().to(intro.querySelector('h1'), { x: -18, opacity: 0.35 }).to(intro.querySelector('.hero-art'), { y: -32, opacity: 0.65 }, '<') })
+        ScrollTrigger.create({ trigger: intro, start: 'top top', end: 'bottom top', scrub: 0.6, animation: gsap.timeline().to(intro.querySelector('h1'), { x: -18 }).to(intro.querySelector('.hero-art'), { y: -32, opacity: 0.65 }, '<') })
         if (introReveals.length) gsap.set(introReveals, { willChange: 'transform, opacity' })
       }
 
