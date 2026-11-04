@@ -34,9 +34,8 @@ export function ManifestoText() {
       if (!ref.current) return
       const normalized = (ref.current.textContent || '').replace(/\s+/g, ' ').trim()
       const tokens = [...ref.current.querySelectorAll<HTMLElement>('.manifesto-token')]
-      tokens.forEach((word) => { word.style.opacity = '1' })
-      const missing = tokens.some((word) => word.style.opacity !== '1')
-      if (normalized !== manifestoSource || missing) console.warn('[v0] Manifesto final-state check failed', { normalized, missing })
+      tokens.forEach((word) => { word.style.setProperty('opacity', '1', 'important') })
+      if (normalized !== manifestoSource) console.warn('[v0] Manifesto final-state check failed', { normalized, expected: manifestoSource })
     }
     const frame = window.requestAnimationFrame(check)
     return () => window.cancelAnimationFrame(frame)

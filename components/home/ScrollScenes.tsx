@@ -43,8 +43,9 @@ export function RibbonVelocity() {
   const { scrollY } = useScroll()
   const velocity = useVelocity(scrollY)
   const speed = useTransform(velocity, [-1800, 0, 1800], [-1, 0, 1])
-  const skew = useTransform(velocity, [-1800, 0, 1800], [-4, 0, 4])
-  return <Reduced><motion.div className="ribbon-velocity" style={{ '--ribbon-speed': speed, skewX: skew } as any} /></Reduced>
+  const boundedVelocity = useTransform(velocity, [-900, 0, 900], [-1, 0, 1])
+  const skew = useTransform(boundedVelocity, [-1, 0, 1], [-1.5, 0, 1.5])
+  return <Reduced><motion.div className="ribbon-velocity" style={{ '--ribbon-speed': boundedVelocity, skewX: skew } as any} /></Reduced>
 }
 
 export function ScrubStage({ className = '', children }: { className?: string; children: ReactNode }) {

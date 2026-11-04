@@ -42,7 +42,7 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
   const context = useContext(FxContext)
   const ref = useRef<HTMLElement>(null)
   const pieces = useMemo(() => delays(children, variant, speed, delay), [children, variant, speed, delay])
-  useEffect(() => { context?.observe(ref.current) }, [context, replayKey, children])
+  useEffect(() => { const node = ref.current; if (!node) return; if (context?.reduced) node.dataset.state = 'done'; else if (node.getBoundingClientRect().top < window.innerHeight * 1.1) node.dataset.state = 'in'; else context?.observe(node) }, [context, replayKey, children])
   useEffect(() => {
     const node = ref.current
     if (!node || variant !== 'TYPE' && variant !== 'TYPE_SEQUENCE') return
@@ -52,6 +52,7 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
     watch()
     const observer = new MutationObserver(watch)
     observer.observe(node, { attributes: true, attributeFilter: ['data-state'] })
+    watch()
     const finishOnInteraction = () => finish()
     node.addEventListener('click', finishOnInteraction); node.addEventListener('keydown', finishOnInteraction); window.addEventListener('scroll', finishOnInteraction, { passive: true, once: true })
     return () => { if (timer) window.clearTimeout(timer); observer.disconnect(); node.removeEventListener('click', finishOnInteraction); node.removeEventListener('keydown', finishOnInteraction); window.removeEventListener('scroll', finishOnInteraction) }
@@ -63,7 +64,7 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
     pieces.forEach(({ piece, index, value }) => { if (/\s+/.test(piece)) { flush(); nodes.push(<span className="fx-space" key={`${index}-space`}>{piece}</span>) } else chars.push(<span aria-hidden="true" style={{ '--i': index, '--d': `${value}ms` } as React.CSSProperties} key={`${index}-${piece}`}>{piece}</span>) })
     flush(); return nodes
   })()
-  return <Tag ref={ref} className={`fx-text fx-${variant.toLowerCase()} ${className}`} data-fx data-state="pending" aria-label={children} key={replayKey}>{content}</Tag>
+  return <Tag ref={ref} className={`fx-text fx-${variant.toLowerCase()} ${className}`} data-fx data-state="in" aria-label={children} key={replayKey}>{content}</Tag>
 }
 
 export type { Variant as AnimatedTextVariant }
