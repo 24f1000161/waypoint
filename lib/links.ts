@@ -1,1 +1,1 @@
-export const links = { studentStart: '#student-start', mentorStart: '#mentor-start', signIn: '#sign-in', how: '#how-it-works', areas: '#guidance-areas', mentors: '#for-mentors', faq: '#faq', privacy: '#privacy', terms: '#terms', contact: '#contact' } as const
+export const links = { register: '/register', studentStart: '/register/student', mentorStart: '/register/mentor', signIn: '/sign-in', how: '#how-it-works', areas: '#guidance-areas', mentors: '#for-mentors', faq: '#faq', privacy: '#privacy', terms: '#terms', contact: '#contact' } as const
