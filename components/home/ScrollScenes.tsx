@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useMotionTemplate, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
+import { motion, useMotionTemplate, useReducedMotion, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 
 const sections = ['departure', 'the-gap', 'journey', 'atlas', 'human-loop', 'private', 'mentors', 'faq', 'closing']
@@ -17,7 +17,17 @@ export function ScrollSpine() {
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24 })
   const [current, setCurrent] = useState('departure')
   useEffect(() => { const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && setCurrent(entry.target.getAttribute('data-section') || 'departure')), { rootMargin: '-45% 0px -45% 0px' }); sections.forEach((name) => { const node = document.querySelector(`[data-section="${name}"]`); if (node) observer.observe(node) }); return () => observer.disconnect() }, [])
-  return <Reduced><div className="scroll-spine" aria-hidden="true"><motion.span className="scroll-spine-progress" style={{ scaleY: progress }}/><motion.i className="scroll-spine-dot" style={{ top: useTransform(progress, [0, 1], ['0%', '100%']) }}/><span className="scroll-spine-label">{labels[current]}</span></div><div className="edge-mist"/></Reduced>
+  return <><Reduced><div className="scroll-spine" aria-hidden="true"><motion.span className="scroll-spine-progress" style={{ scaleY: progress }}/><motion.i className="scroll-spine-dot" style={{ top: useTransform(progress, [0, 1], ['0%', '100%']) }}/><span className="scroll-spine-label">{labels[current]}</span></div></Reduced><DirectionalFog/></>
+}
+
+export function DirectionalFog() {
+  const reduced = useReducedMotion()
+  const { scrollY } = useScroll()
+  const velocity = useVelocity(scrollY)
+  const backX = useTransform(velocity, [-1800, 0, 1800], [14, 0, -14])
+  const midX = useTransform(velocity, [-1800, 0, 1800], [28, 0, -28])
+  const frontX = useTransform(velocity, [-1800, 0, 1800], [44, 0, -44])
+  return <div className={`directional-fog ${reduced ? 'is-reduced' : ''}`} aria-hidden="true"><motion.span className="fog-layer fog-layer-back" style={reduced ? undefined : { x: backX }}/><motion.span className="fog-layer fog-layer-mid" style={reduced ? undefined : { x: midX }}/><motion.span className="fog-layer fog-layer-front" style={reduced ? undefined : { x: frontX }}/></div>
 }
 
 export function HeroUnravel() {
@@ -42,7 +52,6 @@ export function KineticDivider({ words, accent = 'var(--marigold)' }: { words: s
 export function RibbonVelocity() {
   const { scrollY } = useScroll()
   const velocity = useVelocity(scrollY)
-  const speed = useTransform(velocity, [-1800, 0, 1800], [-1, 0, 1])
   const boundedVelocity = useTransform(velocity, [-900, 0, 900], [-1, 0, 1])
   const skew = useTransform(boundedVelocity, [-1, 0, 1], [-1.5, 0, 1.5])
   return <Reduced><motion.div className="ribbon-velocity" style={{ '--ribbon-speed': boundedVelocity, skewX: skew } as any} /></Reduced>

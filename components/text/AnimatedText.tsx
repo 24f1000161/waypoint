@@ -29,6 +29,7 @@ export function FxProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.fxBlur = lowPower ? 'off' : 'on'
     document.documentElement.classList.add('fx-ready')
     observer.current = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.setAttribute('data-state', 'in'); observer.current?.unobserve(entry.target) } }), { threshold: .25, rootMargin: '0px 0px -10% 0px' })
+    document.querySelectorAll<HTMLElement>('[data-fx][data-state="pending"]').forEach((node) => observer.current?.observe(node))
     const failSafe = window.setTimeout(() => document.querySelectorAll('[data-fx][data-state="pending"]').forEach((node) => node.setAttribute('data-state', 'in')), 4000)
     const forceVisible = () => document.querySelectorAll('[data-fx][data-state="pending"]').forEach((node) => node.setAttribute('data-state', 'in'))
     window.addEventListener('pagehide', forceVisible); window.addEventListener('pageshow', forceVisible); document.addEventListener('visibilitychange', forceVisible)
@@ -42,13 +43,13 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
   const context = useContext(FxContext)
   const ref = useRef<HTMLElement>(null)
   const pieces = useMemo(() => delays(children, variant, speed, delay), [children, variant, speed, delay])
-  useEffect(() => { const node = ref.current; if (!node) return; if (context?.reduced) node.dataset.state = 'done'; else if (node.getBoundingClientRect().top < window.innerHeight * 1.1) node.dataset.state = 'in'; else context?.observe(node) }, [context, replayKey, children])
+  useEffect(() => { const node = ref.current; if (!node) return; const reduced = context?.reduced || window.matchMedia('(prefers-reduced-motion: reduce)').matches; if (reduced) node.dataset.state = 'done'; else if (node.getBoundingClientRect().top < window.innerHeight * 1.1) node.dataset.state = 'in'; else context?.observe(node) }, [context, replayKey, children])
   useEffect(() => {
     const node = ref.current
     if (!node || variant !== 'TYPE' && variant !== 'TYPE_SEQUENCE') return
     let timer: number | undefined
     const finish = () => { if (node.dataset.state === 'in') { node.dataset.state = 'done'; node.dispatchEvent(new CustomEvent('fx-done')) } }
-    const watch = () => { if (node.dataset.state === 'in') { const last = pieces[pieces.length - 1]?.value || 0; timer = window.setTimeout(finish, last + 700) } }
+    const watch = () => { if (timer) window.clearTimeout(timer); if (node.dataset.state === 'in') { const last = pieces[pieces.length - 1]?.value || 0; timer = window.setTimeout(finish, last + 700) } }
     watch()
     const observer = new MutationObserver(watch)
     observer.observe(node, { attributes: true, attributeFilter: ['data-state'] })
@@ -64,7 +65,7 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
     pieces.forEach(({ piece, index, value }) => { if (/\s+/.test(piece)) { flush(); nodes.push(<span className="fx-space" key={`${index}-space`}>{piece}</span>) } else chars.push(<span aria-hidden="true" style={{ '--i': index, '--d': `${value}ms` } as React.CSSProperties} key={`${index}-${piece}`}>{piece}</span>) })
     flush(); return nodes
   })()
-  return <Tag ref={ref} className={`fx-text fx-${variant.toLowerCase()} ${className}`} data-fx data-state="in" aria-label={children} key={replayKey}>{content}</Tag>
+  return <Tag ref={ref} className={`fx-text fx-${variant.toLowerCase()} ${className}`} data-fx aria-label={children} key={replayKey}>{content}</Tag>
 }
 
 export type { Variant as AnimatedTextVariant }
