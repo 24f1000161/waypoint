@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ElementType, type ReactNode } from 'react'
 import { useMotionPreference } from '@/lib/motion/MotionPreferenceProvider'
-import { SiteTypewriter } from './SiteTypewriter'
 
 type Variant = 'TYPE' | 'TYPE_SEQUENCE' | 'SCRAMBLE' | 'MASK_LINES' | 'WORD_RISE' | 'CHAR_CASCADE' | 'WAVE' | 'HIGHLIGHT' | 'ROLL' | 'STRIKE'
 type Props = { as?: ElementType; children: string; variant?: Variant; speed?: 'fast' | 'slow' | number; delay?: number; className?: string; replayKey?: string | number }
@@ -36,7 +35,7 @@ export function FxProvider({ children }: { children: ReactNode }) {
     return () => { media.removeEventListener('change', update); observer.current?.disconnect(); window.clearTimeout(failSafe); window.removeEventListener('pagehide', forceVisible); window.removeEventListener('pageshow', forceVisible); document.removeEventListener('visibilitychange', forceVisible) }
   }, [])
   const value = useMemo(() => ({ reduced, observe: (element: HTMLElement | null) => { if (!element) return; if (reduced) { element.setAttribute('data-state', 'done'); return } if (element.getBoundingClientRect().top < window.innerHeight * 1.1) element.setAttribute('data-state', 'in'); else observer.current?.observe(element) } }), [reduced])
-  return <FxContext.Provider value={value}>{children}<SiteTypewriter/><noscript><style>{'[data-fx]{opacity:1!important;transform:none!important;clip-path:none!important}'}</style></noscript></FxContext.Provider>
+  return <FxContext.Provider value={value}>{children}<noscript><style>{'[data-fx]{opacity:1!important;transform:none!important;clip-path:none!important}'}</style></noscript></FxContext.Provider>
 }
 
 export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE', speed, delay = 0, className = '', replayKey }: Props) {
@@ -61,7 +60,7 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
   const content = (() => {
     if (variant !== 'TYPE' && variant !== 'TYPE_SEQUENCE') return pieces.map(({ piece, index, value }) => /\s+/.test(piece) ? <span className="fx-space" key={`${index}-space`}>{piece}</span> : <span aria-hidden="true" style={{ '--i': index, '--d': `${value}ms` } as React.CSSProperties} key={`${index}-${piece}`}>{piece}</span>)
     const nodes: React.ReactNode[] = []; let chars: React.ReactNode[] = []; let wordKey = 0
-    const flush = () => { if (chars.length) { nodes.push(<span className="fx-word" key={`word-${wordKey++}`}>{chars}</span>); chars = [] } }
+    const flush = () => { if (chars.length) { nodes.push(<span className="fx-word" style={{ opacity: 1 }} key={`word-${wordKey++}`}>{chars}</span>); chars = [] } }
     pieces.forEach(({ piece, index, value }) => { if (/\s+/.test(piece)) { flush(); nodes.push(<span className="fx-space" key={`${index}-space`}>{piece}</span>) } else chars.push(<span aria-hidden="true" style={{ '--i': index, '--d': `${value}ms` } as React.CSSProperties} key={`${index}-${piece}`}>{piece}</span>) })
     flush(); return nodes
   })()
