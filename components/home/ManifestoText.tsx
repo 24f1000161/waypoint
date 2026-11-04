@@ -28,6 +28,19 @@ export function ManifestoText() {
     }
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update) }
   }, [])
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || progress < .92 || !ref.current) return
+    const check = () => {
+      if (!ref.current) return
+      const normalized = (ref.current.textContent || '').replace(/\s+/g, ' ').trim()
+      const tokens = [...ref.current.querySelectorAll<HTMLElement>('.manifesto-token')]
+      tokens.forEach((word) => { word.style.opacity = '1' })
+      const missing = tokens.some((word) => Number.parseFloat(getComputedStyle(word).opacity) < .99)
+      if (normalized !== manifestoSource || missing) console.warn('[v0] Manifesto final-state check failed', { normalized, missing })
+    }
+    const frame = window.requestAnimationFrame(check)
+    return () => window.cancelAnimationFrame(frame)
+  }, [progress])
   const cursor = progress >= .92 ? words.length : Math.floor(Math.min(1, progress / .8) * words.length)
   let wordIndex = 0
   return <>

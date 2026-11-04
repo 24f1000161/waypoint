@@ -2,14 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
+import { AnimatedText } from './AnimatedText'
 
-export function TypeText({ text, active = true, speed = 22, className = '' }: { text: string; active?: boolean; speed?: number; className?: string }) {
-  const reduced = useReducedMotion()
-  const [count, setCount] = useState(reduced || !active ? text.length : 0)
-  const key = `${text}-${active}`
-  useEffect(() => { if (reduced || !active) { setCount(text.length); return } setCount(0); let i = 0; const timer = window.setInterval(() => { i += 1; setCount(i); if (i >= text.length) window.clearInterval(timer) }, speed); return () => window.clearInterval(timer) }, [key, reduced, active, text, speed])
-  return <span className={`type-text ${className}`} aria-label={text}><span aria-hidden="true">{text.slice(0, count)}</span><span className={`type-caret ${count >= text.length ? 'done' : ''}`} aria-hidden="true"/></span>
-}
+export function TypeText({ text, active = true, speed = 22, className = '' }: { text: string; active?: boolean; speed?: number; className?: string }) { return <AnimatedText variant="TYPE" speed={speed} className={`${className} ${active ? '' : 'fx-static'}`}>{text}</AnimatedText> }
 
 export function RollingWord({ value, items }: { value: string; items: string[] }) {
   const index = Math.max(0, items.indexOf(value))
