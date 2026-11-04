@@ -28,7 +28,7 @@ export function GsapMotionLayer({ children }: Props) {
 
       const intro = document.querySelector<HTMLElement>('[data-gsap-intro]')
       if (intro) {
-        const title = intro.querySelector('h1')
+        const title = intro.querySelector<HTMLElement>('h1:not(.hero-typewriter)')
         const split = title ? new SplitText(title, { type: 'lines', mask: 'lines', autoSplit: true }) : null
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
         if (split?.lines.length) tl.from(split.lines, { yPercent: 105, opacity: 0, duration: 0.9, stagger: 0.12 }, 0)
