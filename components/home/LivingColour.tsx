@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import type { ElementType, ReactNode } from 'react'
+import { AnimatedText } from '@/components/text/AnimatedText'
 
 const accentBySection: Record<string, string> = {
   departure: '#B86E0A',
@@ -56,7 +57,7 @@ export function LiveText({ as: Component = 'em', phase = 0, children, className 
     return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update) }
   }, [phase])
   const RenderComponent = Component as any
-  return <RenderComponent ref={ref} className={`live-text ${className}`} data-in-view="false">{children}</RenderComponent>
+  return <RenderComponent ref={ref} className={`live-text ${className}`} data-in-view="false"><AnimatedText variant="TYPE" speed="slow">{typeof children === 'string' ? children : String(children)}</AnimatedText></RenderComponent>
 }
 
 export function ColourLens({ children, className = '' }: { children: ReactNode; className?: string }) {

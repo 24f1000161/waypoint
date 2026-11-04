@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useMotionTemplate, useReducedMotion, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
+import { motion, useMotionTemplate, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 
 const sections = ['departure', 'the-gap', 'journey', 'atlas', 'human-loop', 'private', 'mentors', 'faq', 'closing']
@@ -21,7 +21,8 @@ export function ScrollSpine() {
 }
 
 export function DirectionalFog() {
-  const reduced = useReducedMotion()
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => { const media = window.matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setReduced(media.matches); update(); media.addEventListener('change', update); return () => media.removeEventListener('change', update) }, [])
   const { scrollY } = useScroll()
   const velocity = useVelocity(scrollY)
   const backX = useTransform(velocity, [-1800, 0, 1800], [14, 0, -14])
