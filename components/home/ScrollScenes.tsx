@@ -17,18 +17,7 @@ export function ScrollSpine() {
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24 })
   const [current, setCurrent] = useState('departure')
   useEffect(() => { const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && setCurrent(entry.target.getAttribute('data-section') || 'departure')), { rootMargin: '-45% 0px -45% 0px' }); sections.forEach((name) => { const node = document.querySelector(`[data-section="${name}"]`); if (node) observer.observe(node) }); return () => observer.disconnect() }, [])
-  return <><Reduced><div className="scroll-spine" aria-hidden="true"><motion.span className="scroll-spine-progress" style={{ scaleY: progress }}/><motion.i className="scroll-spine-dot" style={{ top: useTransform(progress, [0, 1], ['0%', '100%']) }}/><span className="scroll-spine-label">{labels[current]}</span></div></Reduced><DirectionalFog/></>
-}
-
-export function DirectionalFog() {
-  const [reduced, setReduced] = useState(false)
-  useEffect(() => { const media = window.matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setReduced(media.matches); update(); media.addEventListener('change', update); return () => media.removeEventListener('change', update) }, [])
-  const { scrollY } = useScroll()
-  const velocity = useVelocity(scrollY)
-  const backX = useTransform(velocity, [-1800, 0, 1800], [14, 0, -14])
-  const midX = useTransform(velocity, [-1800, 0, 1800], [28, 0, -28])
-  const frontX = useTransform(velocity, [-1800, 0, 1800], [44, 0, -44])
-  return <div className={`directional-fog ${reduced ? 'is-reduced' : ''}`} aria-hidden="true"><motion.span className="fog-layer fog-layer-back" style={reduced ? undefined : { x: backX }}/><motion.span className="fog-layer fog-layer-mid" style={reduced ? undefined : { x: midX }}/><motion.span className="fog-layer fog-layer-front" style={reduced ? undefined : { x: frontX }}/></div>
+  return <><Reduced><div className="scroll-spine" aria-hidden="true"><motion.span className="scroll-spine-progress" style={{ scaleY: progress }}/><motion.i className="scroll-spine-dot" style={{ top: useTransform(progress, [0, 1], ['0%', '100%']) }}/><span className="scroll-spine-label">{labels[current]}</span></div><div className="edge-mist"/></Reduced></>
 }
 
 export function HeroUnravel() {

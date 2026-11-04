@@ -63,6 +63,10 @@ export function GsapMotionLayer({ children }: Props) {
         if (cards.length) gsap.from(cards, { y: 42, opacity: 0, rotate: 1.5, stagger: .08, duration: .75, ease: 'power3.out', scrollTrigger: { trigger: wrapper, start: 'top 72%', once: true } })
       })
 
+      gsap.utils.toArray<HTMLElement>('.journey-stage-image, .guidance-scene').forEach((visual) => {
+        gsap.from(visual, { clipPath: 'inset(0 100% 0 0)', scale: 1.045, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: visual, start: 'top 82%', once: true } })
+      })
+
       gsap.utils.toArray<HTMLElement>('.ghost-word, .cropped-wordmark').forEach((word) => {
         gsap.to(word, { '--fill-progress': 1, ease: 'none', scrollTrigger: { trigger: word.closest('[data-section]') || word, start: 'top 85%', end: 'bottom 35%', scrub: 0.7 } })
       })

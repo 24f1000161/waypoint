@@ -10,7 +10,7 @@ const FxContext = createContext<FxContextValue | null>(null)
 
 function delays(text: string, variant: Variant, speed: Props['speed'], delay: number) {
   const base = typeof speed === 'number' ? speed : speed === 'slow' ? 38 : speed === 'fast' ? 14 : variant === 'TYPE' ? 22 : 35
-  const pieces = variant === 'WORD_RISE' || text.length > 140 ? text.split(/(\s+)/) : [...text]
+  const pieces = variant === 'WORD_RISE' ? text.split(/(\s+)/) : [...text]
   let elapsed = delay
   return pieces.map((piece, index) => { const value = elapsed; if (variant === 'TYPE' || variant === 'TYPE_SEQUENCE') elapsed += base + (piece === ',' ? 120 : /[.!?]/.test(piece) ? 260 : 0); else elapsed += base; return { piece, index, value } })
 }
@@ -55,8 +55,8 @@ export function AnimatedText({ as: Tag = 'span', children, variant = 'WORD_RISE'
     observer.observe(node, { attributes: true, attributeFilter: ['data-state'] })
     watch()
     const finishOnInteraction = () => finish()
-    node.addEventListener('click', finishOnInteraction); node.addEventListener('keydown', finishOnInteraction); window.addEventListener('scroll', finishOnInteraction, { passive: true, once: true })
-    return () => { if (timer) window.clearTimeout(timer); observer.disconnect(); node.removeEventListener('click', finishOnInteraction); node.removeEventListener('keydown', finishOnInteraction); window.removeEventListener('scroll', finishOnInteraction) }
+    node.addEventListener('click', finishOnInteraction); node.addEventListener('keydown', finishOnInteraction)
+    return () => { if (timer) window.clearTimeout(timer); observer.disconnect(); node.removeEventListener('click', finishOnInteraction); node.removeEventListener('keydown', finishOnInteraction) }
   }, [children, pieces, variant, replayKey])
   const content = (() => {
     if (variant !== 'TYPE' && variant !== 'TYPE_SEQUENCE') return pieces.map(({ piece, index, value }) => /\s+/.test(piece) ? <span className="fx-space" key={`${index}-space`}>{piece}</span> : <span aria-hidden="true" style={{ '--i': index, '--d': `${value}ms` } as React.CSSProperties} key={`${index}-${piece}`}>{piece}</span>)
