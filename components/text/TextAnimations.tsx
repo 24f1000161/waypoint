@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { AnimatedText } from './AnimatedText'
 
-export function TypeText({ text, active = true, speed = 22, className = '' }: { text: string; active?: boolean; speed?: number; className?: string }) { return <AnimatedText variant="TYPE" speed={speed} className={`${className} ${active ? '' : 'fx-static'}`}>{text}</AnimatedText> }
+export function TypeText({ text, active = true, speed = 22, className = '' }: { text: string; active?: boolean; speed?: number | 'fast' | 'slow'; className?: string }) { return <AnimatedText variant="TYPE" speed={speed} className={`${className} ${active ? '' : 'fx-static'}`}>{text}</AnimatedText> }
 
 export function RollingWord({ value, items }: { value: string; items: string[] }) {
   const index = Math.max(0, items.indexOf(value))

@@ -35,7 +35,7 @@ export function ManifestoText() {
       const normalized = (ref.current.textContent || '').replace(/\s+/g, ' ').trim()
       const tokens = [...ref.current.querySelectorAll<HTMLElement>('.manifesto-token')]
       tokens.forEach((word) => { word.style.opacity = '1' })
-      const missing = tokens.some((word) => Number.parseFloat(getComputedStyle(word).opacity) < .99)
+      const missing = tokens.some((word) => word.style.opacity !== '1')
       if (normalized !== manifestoSource || missing) console.warn('[v0] Manifesto final-state check failed', { normalized, missing })
     }
     const frame = window.requestAnimationFrame(check)
