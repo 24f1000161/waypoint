@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { useMotionPreference } from '@/lib/motion/MotionPreferenceProvider'
 import { Check, Info, MailCheck, ShieldAlert } from 'lucide-react'
 import type { AuthRole } from '@/lib/auth/types'
 
@@ -11,7 +12,7 @@ const copy = { notEligible: ['We couldn’t verify your eligibility.', 'Waypoint
 
 export function AuthNotice({ variant, role = 'student', actionLabel, actionHref }: { variant: keyof typeof copy; role?: AuthRole; actionLabel?: string; actionHref?: string }) { const [heading, body, defaultAction] = copy[variant]; const action = actionLabel ?? defaultAction; const href = actionHref ?? (action === 'Continue' ? `/continue?role=${role}` : action.startsWith('Contact') ? '/contact' : action === 'Reset password' ? '/forgot-password' : '/sign-in'); const Icon = variant === 'checkEmail' ? MailCheck : variant === 'accountCreated' ? Check : variant === 'deactivated' || variant === 'notEligible' ? ShieldAlert : Info; return <section className="auth-notice" aria-live="polite"><Icon className="auth-notice-icon" aria-hidden="true"/><h1>{heading}</h1><p>{body}</p><div className="auth-notice-actions"><Link className="btn btn-accent" href={href}>{action}<span aria-hidden="true">↗</span></Link>{variant === 'notEligible' && <Link className="btn btn-outline" href="/contact">Contact the IIC team</Link>}{variant === 'alreadyRegistered' && <Link className="btn btn-outline" href="/forgot-password">Reset password</Link>}</div></section> }
 
-export function WhatHappensNext({ role }: { role: 'student' | 'mentor' }) { const steps = role === 'student' ? ['Create your account', 'Build your profile', 'Describe what you need', 'The IIC team reviews'] : ['Create your account', 'Set up your mentoring profile', 'Set availability and capacity', 'Accept or decline proposals']; return <section className="auth-next"><p className="auth-eyebrow">What happens next</p><ol className="auth-steps">{steps.map((step, index) => <li key={step}><span className="auth-step-marker">{index + 1}</span><div><strong>{step}</strong>{role === 'student' && index === 1 && <span>Required fields are completed before you can request a mentor.</span>}</div></li>)}</ol></section> }
+export function WhatHappensNext({ role }: { role: 'student' | 'mentor' }) { const { reduced } = useMotionPreference(); const steps = role === 'student' ? ['Create your account', 'Build your profile', 'Describe what you need', 'The IIC team reviews'] : ['Create your account', 'Set up your mentoring profile', 'Set availability and capacity', 'Accept or decline proposals']; return <section className={`auth-next ${reduced ? 'is-reduced' : ''}`} aria-labelledby="auth-next-title"><p id="auth-next-title" className="auth-eyebrow">What happens next</p><ol className="auth-steps">{steps.map((step, index) => <li key={step} style={{ '--step-index': index } as CSSProperties}><span className="auth-step-marker" aria-hidden="true">{index + 1}</span><div><strong>{step}</strong>{role === 'student' && index === 1 && <span>Required fields are completed before you can request a mentor.</span>}</div></li>)}</ol></section> }
 
 export function PrivacyNote() { return <details className="auth-privacy"><summary>What does Waypoint store?</summary><div className="auth-privacy-grid"><div><strong>Waypoint records</strong><ul><li>Relationship status</li><li>That an interaction occurred</li><li>Structured feedback</li><li>Decision dates</li></ul></div><div><strong>Waypoint never stores</strong><ul><li>Messages</li><li>Transcripts</li><li>Meeting content</li></ul></div></div></details> }
 
