@@ -1,0 +1,4 @@
+import { AppShell } from '@/components/shell/AppShell'
+import { DemoBar, PageHeader, SectionCard, SampleTag } from '@/components/dashboard/Primitives'
+export const metadata={title:'Activity and feedback (demo) — Waypoint',robots:{index:false,follow:false}}
+export default function ActivityPage(){return <AppShell role="admin" demoSlot={<DemoBar>Activity & feedback · Sample data</DemoBar>}><PageHeader eyebrow="IIC workspace" title="Activity & feedback" description="Aggregated interaction records and structured feedback only. Conversations are never visible here."><SampleTag/></PageHeader><SectionCard title="Interaction activity"><p className="subtle">Sample aggregate: interactions are recorded by date, channel, topic and duration.</p></SectionCard><SectionCard title="Feedback overview" className="page-section"><p className="subtle">Feedback questions and aggregation are being finalized for a later phase.</p></SectionCard></AppShell>}
