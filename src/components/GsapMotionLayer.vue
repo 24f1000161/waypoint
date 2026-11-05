@@ -9,21 +9,36 @@ const scope = ref(null)
 let context
 
 const splitTextNodes = root => {
-  const targets = root.querySelectorAll('h1,h2,h3,h4,p,li,summary,small,strong,.section-label,.eyebrow,.micro')
+  const targets = root.querySelectorAll('h1,h2,h3,h4,p,li,small,strong,.section-label,.eyebrow,.micro,.faq-question')
   targets.forEach(target => {
-    if (target.closest('svg,[aria-hidden="true"],.hero-typewriter,.marquee-track,.typewriter-ready')) return
+    if (target.closest('svg,[aria-hidden="true"],.hero-typewriter,.marquee-track,.typewriter-ready,nav,.nav-actions,.role-tabs,.journey-rail,.atlas-controls,.hero-ctas,.closing-inner .btn')) return
     const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT)
     const nodes = []
     while (walker.nextNode()) {
       if (walker.currentNode.nodeValue?.trim()) nodes.push(walker.currentNode)
     }
+    const fullText = nodes.map(node => node.nodeValue || '').join('')
+    if (fullText.trim()) target.setAttribute('aria-label', fullText.replace(/\s+/g, ' ').trim())
     nodes.forEach(node => {
       const fragment = document.createDocumentFragment()
-      Array.from(node.nodeValue || '').forEach(character => {
-        const span = document.createElement('span')
-        span.className = 'typewriter-char'
-        span.textContent = character
-        fragment.appendChild(span)
+      const parts = (node.nodeValue || '').split(/(\s+)/)
+      parts.forEach(part => {
+        if (!part) return
+        if (/^\s+$/.test(part)) {
+          fragment.appendChild(document.createTextNode(part))
+          return
+        }
+        const word = document.createElement('span')
+        word.className = 'typewriter-word'
+        word.style.whiteSpace = 'nowrap'
+        Array.from(part).forEach(character => {
+          const span = document.createElement('span')
+          span.className = 'typewriter-char'
+          span.setAttribute('aria-hidden', 'true')
+          span.textContent = character
+          word.appendChild(span)
+        })
+        fragment.appendChild(word)
       })
       node.parentNode?.replaceChild(fragment, node)
     })
@@ -36,7 +51,7 @@ onMounted(() => {
   if (!root) return
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (!reduced) splitTextNodes(root)
-  root.querySelectorAll('h1,h2,h3,h4,p,a,button,li,summary,small,strong,.section-label,.eyebrow,.micro,.brand').forEach(element => element.classList.add('wave-text'))
+  root.querySelectorAll('h1,h2,h3,h4,p,li,small,strong,.section-label,.eyebrow,.micro,.brand,.faq-question').forEach(element => element.classList.add('wave-text'))
   context = gsap.context(() => {
     const sections = gsap.utils.toArray('[data-section]')
     sections.forEach(section => section.classList.add('gsap-ready'))
@@ -65,7 +80,7 @@ onMounted(() => {
       const split = new SplitText(element, { type: 'words', wordsClass: 'manifesto-word' })
       gsap.fromTo(split.words, { opacity: .18, y: 14 }, { opacity: 1, y: 0, stagger: .035, ease: 'none', scrollTrigger: { trigger: element, start: 'top 82%', end: 'bottom 38%', scrub: .6 } })
     })
-    root.querySelectorAll('.journey-stage, .journey-rail button, .atlas-panel, .profile-card, .faq-list details, .lock-card').forEach(element => {
+    root.querySelectorAll('.journey-stage, .journey-rail button, .atlas-panel, .profile-card, .faq-item, .lock-card').forEach(element => {
       gsap.from(element, { y: 34, opacity: 0, duration: .75, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 86%', once: true } })
     })
     root.querySelectorAll('.journey-stage img, .atlas-panel img, .guidance-scene').forEach(visual => {
