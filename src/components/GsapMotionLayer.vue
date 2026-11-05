@@ -1,0 +1,59 @@
+<script setup>
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText } from 'gsap/SplitText'
+
+gsap.registerPlugin(ScrollTrigger, SplitText)
+const scope = ref(null)
+let context
+
+onMounted(() => {
+  const root = scope.value
+  if (!root) return
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  context = gsap.context(() => {
+    const sections = gsap.utils.toArray('[data-section]')
+    sections.forEach(section => section.classList.add('gsap-ready'))
+    if (reduced) return
+
+    const hero = root.querySelector('.hero')
+    if (hero) {
+      const title = hero.querySelector('.hero-typewriter')
+      const art = hero.querySelector('.hero-art')
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      if (title) intro.from(title, { y: 28, opacity: 0, duration: .85 }, .15)
+      intro.from(hero.querySelectorAll('.hero-copy .eyebrow, .hero-copy .lede, .hero-copy .hero-ctas, .hero-copy .micro'), { y: 24, opacity: 0, duration: .65, stagger: .1 }, .45)
+      intro.from(hero.querySelectorAll('.path-line, .path-node, .checkpoint, .checkpoint-dot'), { opacity: 0, scale: .7, strokeDashoffset: 500, duration: 1.1, stagger: .1 }, .35)
+      gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: .6 } }).to(title, { x: -18 }).to(art, { y: -32, opacity: .65 }, '<')
+    }
+
+    root.querySelectorAll('[data-section] > .section-label, .atlas-heading, .journey-heading, .principles h2, .privacy h2, .mentors h2, .faq h2').forEach(element => {
+      gsap.from(element, { y: 34, opacity: 0, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 84%', once: true } })
+    })
+    root.querySelectorAll('.manifesto h2').forEach(element => {
+      const split = new SplitText(element, { type: 'words', wordsClass: 'manifesto-word' })
+      gsap.fromTo(split.words, { opacity: .18, y: 14 }, { opacity: 1, y: 0, stagger: .035, ease: 'none', scrollTrigger: { trigger: element, start: 'top 82%', end: 'bottom 38%', scrub: .6 } })
+    })
+    root.querySelectorAll('.journey-stage, .journey-rail button, .atlas-panel, .profile-card, .faq-list details, .lock-card').forEach(element => {
+      gsap.from(element, { y: 34, opacity: 0, duration: .75, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 86%', once: true } })
+    })
+    root.querySelectorAll('.journey-stage img, .atlas-panel img, .guidance-scene').forEach(visual => {
+      gsap.from(visual, { clipPath: 'inset(0 100% 0 0)', scale: 1.045, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: visual, start: 'top 82%', once: true } })
+    })
+    root.querySelectorAll('.hero-art, .mentor-stack, .contour-field').forEach(visual => {
+      gsap.to(visual, { y: -26, ease: 'none', scrollTrigger: { trigger: visual.closest('[data-section]') || visual, start: 'top bottom', end: 'bottom top', scrub: .8 } })
+    })
+    const decision = root.querySelector('[data-gsap-decision]')
+    if (decision) {
+      gsap.from(decision.querySelectorAll('.token-row .silhouette'), { x: -46, y: 24, opacity: 0, stagger: .14, duration: 1.1, ease: 'back.out(1.4)', scrollTrigger: { trigger: decision, start: 'top 78%', once: true } })
+      gsap.from(decision.querySelector('.flow-ring'), { scale: .6, rotation: -90, opacity: 0, duration: 1, ease: 'back.out(1.6)', scrollTrigger: { trigger: decision, start: 'top 70%', once: true } })
+    }
+    root.querySelectorAll('.closing h2, .closing .btn').forEach(element => gsap.from(element, { y: 38, opacity: 0, stagger: .12, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: element.closest('.closing'), start: 'top 82%', once: true } }))
+    document.fonts?.ready.then(() => ScrollTrigger.refresh())
+  }, root)
+})
+
+onBeforeUnmount(() => { context?.revert(); ScrollTrigger.getAll().forEach(trigger => trigger.kill()) })
+</script>
+<template><div ref="scope" class="gsap-motion-layer"><slot /></div></template>
