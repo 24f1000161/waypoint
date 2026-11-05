@@ -9,7 +9,7 @@ const scope = ref(null)
 let context
 
 const splitTextNodes = root => {
-  const targets = root.querySelectorAll('h1,h2,h3,h4,p,a,button,li,summary,small,strong,.section-label,.eyebrow,.micro')
+  const targets = root.querySelectorAll('h1,h2,h3,h4,p,li,summary,small,strong,.section-label,.eyebrow,.micro')
   targets.forEach(target => {
     if (target.closest('svg,[aria-hidden="true"],.hero-typewriter,.marquee-track,.typewriter-ready')) return
     const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT)
@@ -71,14 +71,9 @@ onMounted(() => {
     root.querySelectorAll('.journey-stage img, .atlas-panel img, .guidance-scene').forEach(visual => {
       gsap.from(visual, { clipPath: 'inset(0 100% 0 0)', scale: 1.045, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: visual, start: 'top 82%', once: true } })
     })
-    root.querySelectorAll('.hero-art, .mentor-stack, .contour-field').forEach(visual => {
+    root.querySelectorAll('.hero-art, .mentor-stack').forEach(visual => {
       gsap.to(visual, { y: -26, ease: 'none', scrollTrigger: { trigger: visual.closest('[data-section]') || visual, start: 'top bottom', end: 'bottom top', scrub: .8 } })
     })
-    const decision = root.querySelector('[data-gsap-decision]')
-    if (decision) {
-      gsap.from(decision.querySelectorAll('.token-row .silhouette'), { x: -46, y: 24, opacity: 0, stagger: .14, duration: 1.1, ease: 'back.out(1.4)', scrollTrigger: { trigger: decision, start: 'top 78%', once: true } })
-      gsap.from(decision.querySelector('.flow-ring'), { scale: .6, rotation: -90, opacity: 0, duration: 1, ease: 'back.out(1.6)', scrollTrigger: { trigger: decision, start: 'top 70%', once: true } })
-    }
     root.querySelectorAll('.closing h2, .closing .btn').forEach(element => gsap.from(element, { y: 38, opacity: 0, stagger: .12, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: element.closest('.closing'), start: 'top 82%', once: true } }))
     document.fonts?.ready.then(() => ScrollTrigger.refresh())
   }, root)
