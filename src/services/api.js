@@ -1,0 +1,4 @@
+import axios from 'axios'
+export const api=axios.create({baseURL:import.meta.env.VITE_API_BASE_URL||'/api',headers:{'Content-Type':'application/json'},timeout:10000})
+export const authService={signIn:credentials=>api.post('/auth/sign-in',credentials),register:payload=>api.post('/auth/register',payload),forgotPassword:payload=>api.post('/auth/forgot-password',payload)}
+// Backend endpoints are intentionally not called by demo views until the Flask contract is provided.
