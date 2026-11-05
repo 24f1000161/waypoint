@@ -8,14 +8,44 @@ gsap.registerPlugin(ScrollTrigger, SplitText)
 const scope = ref(null)
 let context
 
+const splitTextNodes = root => {
+  const targets = root.querySelectorAll('h1,h2,h3,h4,p,a,button,li,summary,small,strong,.section-label,.eyebrow,.micro')
+  targets.forEach(target => {
+    if (target.closest('svg,[aria-hidden="true"],.hero-typewriter,.marquee-track,.typewriter-ready')) return
+    const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT)
+    const nodes = []
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue?.trim()) nodes.push(walker.currentNode)
+    }
+    nodes.forEach(node => {
+      const fragment = document.createDocumentFragment()
+      Array.from(node.nodeValue || '').forEach(character => {
+        const span = document.createElement('span')
+        span.className = 'typewriter-char'
+        span.textContent = character
+        fragment.appendChild(span)
+      })
+      node.parentNode?.replaceChild(fragment, node)
+    })
+    target.classList.add('typewriter-ready')
+  })
+}
+
 onMounted(() => {
   const root = scope.value
   if (!root) return
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!reduced) splitTextNodes(root)
+  root.querySelectorAll('h1,h2,h3,h4,p,a,button,li,summary,small,strong,.section-label,.eyebrow,.micro,.brand').forEach(element => element.classList.add('wave-text'))
   context = gsap.context(() => {
     const sections = gsap.utils.toArray('[data-section]')
     sections.forEach(section => section.classList.add('gsap-ready'))
     if (reduced) return
+
+    root.querySelectorAll('.typewriter-ready').forEach(target => {
+      const characters = target.querySelectorAll('.typewriter-char')
+      gsap.fromTo(characters, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: .018, stagger: .018, ease: 'none', scrollTrigger: { trigger: target, start: 'top 92%', once: true } })
+    })
 
     const hero = root.querySelector('.hero')
     if (hero) {
